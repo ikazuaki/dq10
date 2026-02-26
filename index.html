@@ -2,10 +2,350 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>サンプルHTMLページ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ルベランギス３　タイマー</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --yellow-accent: #ffd700;
+            --red-accent: #ff4d4d;
+            --inactive-opacity: 0.4;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* タイマーセクション */
+        .timer-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 5px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .timer-section.active {
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .timer-section.inactive {
+            opacity: var(--inactive-opacity);
+        }
+
+        #timer1-section { border-color: var(--yellow-accent); }
+        #timer2-section { border-color: var(--red-accent); }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .shortcut-hint {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        /* カウントダウン表示 */
+        .countdown {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-align: center;
+            margin: 5px 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* 状況表示カード */
+        .status-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .current-label {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .step-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .step-list span.active-step {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* ボタン */
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-yellow { background-color: var(--yellow-accent); color: #000; }
+        .btn-red { background-color: var(--red-accent); color: #fff; }
+
+        /* 情報テーブル */
+        .info-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            font-size: 1.2rem;
+            background: #1a1a1a;
+        }
+
+        .info-table th, .info-table td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .info-table th { background: #252525; color: #bbb; width: 80px; }
+
+        .notes {
+            margin-top: 10px;
+            font-size: 1.1rem;
+            color: #aaa;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 480px) {
+            .countdown { font-size: 2.8rem; }
+            .current-label { font-size: 1.4rem; }
+        }
+    </style>
 </head>
 <body>
-    <h1>ようこそ！</h1>
-    <p>これはサンプルのHTMLページです。</p>
+
+<div class="container">
+    <section id="timer1-section" class="timer-section">
+        <div class="header">
+            <h2 class="title" style="color: var(--yellow-accent);">サークルカラミティ</h2>
+            <span class="shortcut-hint">[1] or [Space]</span>
+        </div>
+        <div id="t1-display" class="countdown">0.0</div>
+        <div class="status-display">
+            <span id="t1-label" class="current-label">待機中</span>
+            <div id="t1-steps" class="step-list">
+                <span data-idx="0">線上</span> → <span data-idx="1">線上（遅）</span> → <span data-idx="2">線上以外</span> → 
+                <span data-idx="3">線上（遅）</span> → <span data-idx="4">外周広め</span> → <span data-idx="5">線上以外（遅）</span>
+            </div>
+        </div>
+        <button id="btn1" class="btn-yellow" onclick="toggleTimer1()">START / STOP</button>
+    </section>
+
+    <section id="timer2-section" class="timer-section">
+        <div class="header">
+            <h2 class="title" style="color: var(--red-accent);">グランドカラミティ</h2>
+            <span class="shortcut-hint">[2] or [Enter]</span>
+        </div>
+        <div id="t2-display" class="countdown">0.0</div>
+        <div class="status-display">
+            <span id="t2-label" class="current-label">待機中</span>
+            <div id="t2-steps" class="step-list">
+                <span data-idx="0">虹</span> → <span data-idx="1">黄色</span>
+            </div>
+        </div>
+        <button id="btn2" class="btn-red" onclick="toggleTimer2()">START / STOP</button>
+    </section>
+
+    <table class="info-table">
+        <tr><th style="color: var(--yellow-accent);">HP90%</th><td>円獄殺 ⇒ ジャッジ ⇒ ツインクロー ⇒ 四方閃</td></tr>
+        <tr><th style="color: var(--yellow-accent);">HP75%</th><td>円獄殺 ⇒ ジャッジ ⇒ 八門崩絶</td></tr>
+        <tr><th style="color: var(--red-accent);">HP50%</th><td>通常 ⇒ 八門崩絶 ⇒ 分散 ⇒ ディザスターブレス</td></tr>
+        <tr><th style="color: var(--red-accent);">HP25%</th><td>ディザスターブレス ⇒ 八門崩絶 ⇒ 分散 ⇒ ジャッジ</td></tr>
+    </table>
+
+    <div class="notes">
+        ※押し反撃（前半）：咎人の邪岩 or ツインクロー<br>
+        ※押し反撃（後半）：咎人の邪岩 or 厭悪の叫び<br>
+        ※次の技はローテーション固有：サークルカラミティ、グランドカラミティ、円獄殺、四方閃、八門崩絶、ディザスターブレス
+    </div>
+</div>
+
+<script>
+    // --- データ定義 ---
+    const CONFIG1 = [
+        { time: 5, label: "線上", voice: "線上", nextTime: 23.5 },
+        { time: 23.5, label: "線上（遅め）", voice: "線上。遅め", nextTime: 21 },
+        { time: 21, label: "線上以外", voice: "線上以外", nextTime: 23.5 },
+        { time: 23.5, label: "線上（遅め）", voice: "線上。遅め", nextTime: 21 },
+        { time: 21, label: "外周広め", voice: "外周広め", nextTime: 25 },
+        { time: 25, label: "線上以外（遅め）", voice: "線上以外。遅め", nextTime: 21 } // A6完了後A1(21秒)へ
+    ];
+
+    const CONFIG2 = [
+        { time: 5, label: "虹", voice: "虹色の床", nextTime: 22.5 },
+        { time: 22.5, label: "黄色", voice: "黄色の床", nextTime: 24.5 } // B2完了後B1(24秒)へ
+    ];
+
+    let timer1 = { active: false, step: 0, timeLeft: 0, interval: null, startTime: null };
+    let timer2 = { active: false, step: 0, timeLeft: 0, interval: null, startTime: null };
+
+    const synth = window.speechSynthesis;
+
+    // --- 音声再生 ---
+    function speak(text) {
+        if (synth.speaking) synth.cancel();
+        const uttr = new SpeechSynthesisUtterance(text);
+        uttr.lang = 'ja-JP';
+        uttr.rate = 1.2;
+        synth.speak(uttr);
+    }
+
+    // --- コアロジック ---
+    function updateDisplay(id, time) {
+        document.getElementById(`t${id}-display`).innerText = Math.max(0, time).toFixed(1);
+    }
+
+    function highlightStep(id, stepIdx) {
+        const steps = document.querySelectorAll(`#t${id}-steps span`);
+        steps.forEach(s => s.classList.remove('active-step'));
+        if (stepIdx !== null) steps[stepIdx].classList.add('active-step');
+    }
+
+    function stopTimer(tObj, id) {
+        clearInterval(tObj.interval);
+        tObj.active = false;
+        tObj.timeLeft = 0;
+        updateDisplay(id, 0);
+        document.getElementById(`t${id}-label`).innerText = "待機中";
+        document.getElementById(`timer${id}-section`).classList.add('inactive');
+        document.getElementById(`timer${id}-section`).classList.remove('active');
+        highlightStep(id, null);
+    }
+
+    function startTimerStep(id, stepIdx, customTime = null) {
+        const tObj = (id === 1) ? timer1 : timer2;
+        const cfg = (id === 1) ? CONFIG1 : CONFIG2;
+        
+        tObj.active = true;
+        tObj.step = stepIdx;
+        tObj.timeLeft = customTime || cfg[stepIdx].time;
+        
+        document.getElementById(`timer${id}-section`).classList.remove('inactive');
+        document.getElementById(`timer${id}-section`).classList.add('active');
+        document.getElementById(`t${id}-label`).innerText = cfg[stepIdx].label;
+        highlightStep(id, stepIdx);
+
+        let voiced5 = false;
+        let voiced3 = false;
+        let voiced2 = false;
+        let voiced1 = false;
+
+        clearInterval(tObj.interval);
+        tObj.interval = setInterval(() => {
+            tObj.timeLeft -= 0.1;
+            updateDisplay(id, tObj.timeLeft);
+
+            // 音声通知タイミング
+            if (tObj.timeLeft <= 6.0 && !voiced5) {
+                speak(cfg[stepIdx].voice);
+                voiced5 = true;
+            }
+            if (tObj.timeLeft <= 3.0 && !voiced3) { speak("3"); voiced3 = true; }
+            if (tObj.timeLeft <= 2.0 && !voiced2) { speak("2"); voiced2 = true; }
+            if (tObj.timeLeft <= 1.0 && !voiced1) { speak("1"); voiced1 = true; }
+
+            if (tObj.timeLeft <= 0) {
+                clearInterval(tObj.interval);
+                // 次のステップへ
+                let nextIdx = stepIdx + 1;
+                let nextTime = null;
+
+                if (id === 1) {
+                    if (nextIdx >= CONFIG1.length) {
+                        nextIdx = 0;
+                        nextTime = 21; // A6終了後はA1を21秒で開始
+                    }
+                } else {
+                    if (nextIdx >= CONFIG2.length) {
+                        nextIdx = 0;
+                        nextTime = 24; // B2終了後はB1を24秒で開始
+                    }
+                }
+                startTimerStep(id, nextIdx, nextTime);
+            }
+        }, 100);
+    }
+
+    function toggleTimer1() {
+        if (timer1.active) {
+            stopTimer(timer1, 1);
+        } else {
+            stopTimer(timer2, 2); // 片方を止める
+            startTimerStep(1, 0);
+        }
+    }
+
+    function toggleTimer2() {
+        if (timer2.active) {
+            stopTimer(timer2, 2);
+        } else {
+            stopTimer(timer1, 1); // 片方を止める
+            startTimerStep(2, 0);
+        }
+    }
+
+    // --- キーボード操作 ---
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Digit1' || e.code === 'Numpad1' || e.code === 'Space') {
+            e.preventDefault();
+            toggleTimer1();
+        }
+        if (e.code === 'Digit2' || e.code === 'Enter' || e.code === 'NumpadEnter') {
+            e.preventDefault();
+            toggleTimer2();
+        }
+    });
+
+    // 初期状態は非アクティブに
+    document.getElementById('timer1-section').classList.add('inactive');
+    document.getElementById('timer2-section').classList.add('inactive');
+
+</script>
+
 </body>
 </html>
