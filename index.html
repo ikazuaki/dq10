@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ギミックタイマー</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --stop-color: #f44336;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .timer-section {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+        .display-label {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            min-height: 3.5rem;
+            color: #ffeb3b;
+        }
+        .countdown {
+            font-size: 4rem;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            margin-bottom: 10px;
+        }
+        button:active { transform: scale(0.98); }
+        .btn-1 { background-color: var(--primary-color); color: white; }
+        .btn-2 { background-color: var(--secondary-color); color: white; }
+        .btn-stop { background-color: var(--stop-color); color: white; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            background: #222;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+            text-align: left;
+        }
+        th { background-color: #333; }
+
+        .active-timer { border: 2px solid #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="section1" class="timer-section">
+        <div id="label1" class="display-label">待機中</div>
+        <div id="count1" class="countdown">0.0</div>
+        <button id="btn1" class="btn-1" onclick="toggleTimer(1)">タイマー1 開始</button>
+    </div>
+
+    <div id="section2" class="timer-section">
+        <div id="label2" class="display-label">待機中</div>
+        <div id="count2" class="countdown">0.0</div>
+        <button id="btn2" class="btn-2" onclick="toggleTimer(2)">タイマー2 開始</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th colspan="2">DQ10 ルベランギスⅢ 固定ローテ</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>90-75</td><td>円→J→ツイン→四</td></tr>
+            <tr><td>75-50</td><td>円→J→八門</td></tr>
+            <tr><td>50-25</td><td>ぺち→八門→分散→息</td></tr>
+            <tr><td>25-0</td><td>息→八門→分散→J</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    let activeTimerId = null;
+    let timerInterval = null;
+    let startTime = 0;
+    let duration = 0;
+    let currentIndex = 0;
+    let synth = window.speechSynthesis;
+
+    const data1 = [
+        { sec: 5, label: "線上", speech: "線上" },
+        { sec: 24, label: "線上（遅め）", speech: "線上、遅め" },
+        { sec: 21, label: "線上以外", speech: "線上以外" },
+        { sec: 23, label: "線上（遅め）", speech: "線上、遅め" },
+        { sec: 21, label: "外周広め", speech: "外周広め" },
+        { sec: 25, label: "線上以外（遅め）", speech: "線上以外、遅め" },
+        { sec: 20, label: "線上", speech: "線上" }
+    ];
+
+    const data2 = [
+        { sec: 5, label: "虹", speech: "虹色の床" },
+        { sec: 23, label: "黄色", speech: "黄色の床" },
+        { sec: 24, label: "虹", speech: "虹色の床" }
+    ];
+
+    function toggleTimer(id) {
+        if (activeTimerId === id) {
+            stopAll();
+        } else {
+            startTimer(id);
+        }
+    }
+
+    function stopAll() {
+        clearInterval(timerInterval);
+        activeTimerId = null;
+        currentIndex = 0;
+        document.getElementById('btn1').innerText = "タイマー1 開始";
+        document.getElementById('btn1').className = "btn-1";
+        document.getElementById('btn2').innerText = "タイマー2 開始";
+        document.getElementById('btn2').className = "btn-2";
+        document.getElementById('label1').innerText = "待機中";
+        document.getElementById('label2').innerText = "待機中";
+        document.getElementById('count1').innerText = "0.0";
+        document.getElementById('count2').innerText = "0.0";
+        synth.cancel();
+    }
+
+    function startTimer(id) {
+        stopAll();
+        activeTimerId = id;
+        currentIndex = 0;
+        
+        const btn = document.getElementById('btn' + id);
+        btn.innerText = "ストップ";
+        btn.className = "btn-stop";
+        
+        runPhase(id, 0);
+    }
+
+    function runPhase(id, index) {
+        if (activeTimerId !== id) return;
+        
+        currentIndex = index;
+        const phaseData = (id === 1) ? data1[index] : data2[index];
+        duration = phaseData.sec;
+        startTime = Date.now();
+
+        document.getElementById('label' + id).innerText = phaseData.label;
+
+        let speechTriggered = false;
+
+        timerInterval = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const remaining = Math.max(0, duration - elapsed);
+            
+            document.getElementById('count' + id).innerText = remaining.toFixed(1);
+
+            // 5秒前に音声を再生
+            if (remaining <= 5.0 && !speechTriggered) {
+                speechTriggered = true;
+                speak(phaseData.speech);
+            }
+
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+                nextPhase(id);
+            }
+        }, 50);
+    }
+
+    function nextPhase(id) {
+        let nextIdx;
+        if (id === 1) {
+            // タイマー1: 7番目(Index 6)が終わったら2番目(Index 1)へ
+            nextIdx = (currentIndex === 6) ? 1 : currentIndex + 1;
+        } else {
+            // タイマー2: 3番目(Index 2)が終わったら2番目(Index 1)へ
+            nextIdx = (currentIndex === 2) ? 1 : currentIndex + 1;
+        }
+        runPhase(id, nextIdx);
+    }
+
+    function speak(text) {
+        // 音声合成のキャンセル（重複防止）
+        synth.cancel();
+
+        // 日本語設定
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = `5秒前。${text}。1。2`;
+        msg.lang = 'ja-JP';
+        
+        // 「5秒ちょうどで収まるスピード」に調整 (やや速め)
+        msg.rate = 1.3; 
+        msg.pitch = 1.0;
+        
+        synth.speak(msg);
+    }
+</script>
+
+</body>
+</html>
