@@ -31,145 +31,138 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 5px 10px;
+            padding: 0;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .container {
             display: flex;
             flex-direction: column;
-            height: 100%;
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
+            padding: 10px;
+            min-height: 100vh;
         }
 
         .timers-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            flex: 1 1 auto;
-            justify-content: center;
+            gap: 12px;
         }
 
         .timer-section {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 10px;
+            padding: 15px;
             border: 2px solid #333;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 10px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .timer-section.active { opacity: 1; border-color: #fff; background: #222; }
         .timer-section.inactive { opacity: var(--inactive-opacity); }
 
         .header { display: flex; justify-content: space-between; align-items: baseline; pointer-events: none; }
-        .title { font-size: 1rem; font-weight: bold; margin: 0; }
+        .title { font-size: 0.9rem; font-weight: bold; margin: 0; letter-spacing: -0.5px; }
 
         .timer-main {
             display: flex;
             align-items: center;
             justify-content: space-between;
             pointer-events: none;
-            margin: 4px 0;
         }
 
         .countdown {
-            font-size: 3.2rem;
+            font-size: 3.8rem;
             font-weight: 700;
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            min-width: 110px;
+            line-height: 1;
         }
 
         .current-label {
             font-size: 1.6rem;
-            font-weight: 700;
+            font-weight: 900;
             text-align: right;
             flex: 1;
         }
 
+        /* 状況一覧（ステップカード）の拡大 */
         .step-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
+            gap: 6px;
             pointer-events: none;
         }
         .step-card {
             background: #000;
             border: 1px solid #444;
             border-radius: 6px;
-            padding: 6px 2px;
-            font-size: 0.75rem;
+            padding: 10px 2px;
+            font-size: 0.85rem; /* 拡大 */
             text-align: center;
             color: #888;
-            font-weight: bold;
+            font-weight: 900; /* 太字強調 */
+            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 38px;
             line-height: 1.2;
         }
 
-        #t1-steps .step-card.active { color: #000; background-color: var(--yellow-accent); border-color: #fff; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        #t2-steps .step-card.active { color: #fff; background-color: var(--red-accent); border-color: #fff; box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); }
+        #t1-steps .step-card.active { color: #000; background-color: var(--yellow-accent); border-color: #fff; }
+        #t2-steps .step-card.active { color: #fff; background-color: var(--red-accent); border-color: #fff; }
 
         .btn-action {
             width: 100%;
-            padding: 8px 0;
-            font-size: 1.1rem;
+            padding: 12px 0;
+            font-size: 1.2rem;
             font-weight: 900;
             border: none;
             border-radius: 8px;
             pointer-events: none;
-            margin: 4px 0;
         }
         .btn-start-y { background-color: var(--yellow-accent); color: #000; }
         .btn-start-r { background-color: var(--red-accent); color: #fff; }
         .btn-stop { background-color: var(--stop-color); color: #fff; }
 
+        /* ローテーション表の拡大 */
         .sub-info-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.72rem;
-            font-weight: bold;
+            font-size: 0.85rem; /* 拡大 */
+            font-weight: 900;
             pointer-events: none;
             border-top: 1px solid #444;
+            margin-top: 5px;
         }
-        .sub-info-table td { padding: 5px 0; border-bottom: 1px solid #2a2a2a; white-space: nowrap; }
-        .arrow { color: var(--arrow-color); margin: 0 2px; font-size: 0.6rem; }
+        .sub-info-table td { padding: 8px 0; border-bottom: 1px solid #2a2a2a; }
+        .arrow { color: var(--arrow-color); margin: 0 2px; font-size: 0.7rem; }
 
-        .slider-wrapper { z-index: 10; padding: 4px 0; }
-        .slider-header { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: bold; color: #888; margin-bottom: 2px; }
-        .time-slider { -webkit-appearance: none; width: 100%; height: 14px; background: #444; border-radius: 6px; outline: none; }
+        .slider-wrapper { z-index: 10; padding: 12px 0 5px 0; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; color: #888; margin-bottom: 6px; }
+        .time-slider { -webkit-appearance: none; width: 100%; height: 24px; background: #444; border-radius: 12px; outline: none; }
 
-        @media (min-width: 800px) {
-            .countdown { font-size: 5.5rem; }
-            .current-label { font-size: 2.8rem; }
-            .title { font-size: 1.5rem; }
-            .step-card { font-size: 1rem; min-height: 55px; }
-            .sub-info-table { font-size: 1.1rem; }
-        }
+        .bottom-area { margin-top: 20px; padding-bottom: 40px; }
+        .bottom-notes { background: #111; border-radius: 8px; padding: 12px; border: 1px solid #333; }
+        .notes-title { font-size: 0.8rem; color: #888; margin-bottom: 6px; display: block; }
+        .notes { font-size: 0.85rem; font-weight: bold; color: #bbb; line-height: 1.6; }
+        .guide { color: #777; font-size: 0.75rem; margin-top: 10px; border-top: 1px solid #333; padding-top: 8px; }
 
-        .bottom-area { display: flex; flex-direction: column; gap: 5px; margin-top: 5px; }
-        .bottom-notes { background: #111; border-radius: 8px; padding: 10px; border-top: 1px solid #444; }
-        .notes { font-size: 0.75rem; font-weight: bold; color: #bbb; line-height: 1.5; }
-        .guide { color: #888; font-size: 0.7rem; margin-top: 4px; }
-
-        .settings-panel { background: #1a1a1a; padding: 8px; border-radius: 8px; }
-        .settings-group { display: flex; gap: 8px; }
+        .settings-panel { margin-top: 12px; background: #111; border-radius: 12px; padding: 12px; border: 1px solid #333; }
+        .settings-title { font-size: 0.9rem; font-weight: bold; color: #888; margin-bottom: 10px; display: block; text-align: center; }
+        .settings-group { display: flex; flex-direction: column; gap: 8px; }
         .settings-group label {
-            display: flex; align-items: center; gap: 6px;
-            background: #333; padding: 12px; border-radius: 15px; cursor: pointer;
-            flex: 1; justify-content: center; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+            background: #222; padding: 12px 15px; border-radius: 8px; cursor: pointer;
+            font-size: 0.95rem; border: 1px solid #333;
         }
-        .version-tag { text-align: center; font-size: 0.6rem; color: #444; padding: 5px 0; }
+        .settings-group label span { font-size: 0.75rem; color: #888; flex: 1; text-align: right; }
+        .version-tag { text-align: center; font-size: 0.7rem; color: #444; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -186,13 +179,13 @@
                 <div id="t1-label" class="current-label">待機中</div>
             </div>
             <div id="t1-steps" class="step-container">
-                <div class="step-card">線上</div><div class="step-card">線上(遅め)</div><div class="step-card">線上以外</div>
-                <div class="step-card">線上(遅め)</div><div class="step-card">外周広め</div><div class="step-card">線上以外(遅め)</div>
+                <div class="step-card">線上</div><div class="step-card">線上<br>(遅め)</div><div class="step-card">線上<br>以外</div>
+                <div class="step-card">線上<br>(遅め)</div><div class="step-card">外周<br>広め</div><div class="step-card">線上以外<br>(遅め)</div>
             </div>
             <button id="btn1" class="btn-action btn-start-y">START</button>
             <table class="sub-info-table">
-                <tr><td><span style="color:var(--yellow-accent)">90%</span> 円獄殺<span class="arrow">▶</span>ジャッジメント<span class="arrow">▶</span>ツインクロー<span class="arrow">▶</span>四方閃</td></tr>
-                <tr><td><span style="color:var(--yellow-accent)">75%</span> 円獄殺<span class="arrow">▶</span>ジャッジメント<span class="arrow">▶</span>八門崩絶</td></tr>
+                <tr><td><span style="color:var(--yellow-accent)">90%</span> 円獄殺<span class="arrow">▶</span>ジャッジ<span class="arrow">▶</span>クロー</td></tr>
+                <tr><td><span style="color:var(--yellow-accent)">75%</span> 円獄殺<span class="arrow">▶</span>ジャッジ<span class="arrow">▶</span>八門崩絶</td></tr>
             </table>
             <div class="slider-wrapper" onclick="event.stopPropagation()">
                 <div class="slider-header"><span>◀ 早める [←]</span><span>遅らせる [→] ▶</span></div>
@@ -214,8 +207,8 @@
             </div>
             <button id="btn2" class="btn-action btn-start-r">START</button>
             <table class="sub-info-table">
-                <tr><td><span style="color:var(--red-accent)">50%</span> 通常<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散する災禍<span class="arrow">▶</span>ディザスターブレス</td></tr>
-                <tr><td><span style="color:var(--red-accent)">25%</span> ディザスターブレス<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散する災禍<span class="arrow">▶</span>ジャッジメント</td></tr>
+                <tr><td><span style="color:var(--red-accent)">50%</span> 通常<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散<span class="arrow">▶</span>ブレス</td></tr>
+                <tr><td><span style="color:var(--red-accent)">25%</span> ブレス<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散<span class="arrow">▶</span>ジャッジ</td></tr>
             </table>
             <div class="slider-wrapper" onclick="event.stopPropagation()">
                 <div class="slider-header"><span>◀ 早める [←]</span><span>遅らせる [→] ▶</span></div>
@@ -226,17 +219,22 @@
 
     <div class="bottom-area">
         <div class="bottom-notes">
-            <div class="notes">固有の技：サークル、グランド、円獄殺、四方閃、八門崩絶、ディザスターブレス</div>
-            <div class="guide">※[←][→]キーで補正, [Space]サークル, [Enter]グランド</div>
+            <span class="notes-title">【ローテーション固有の技】</span>
+            <div class="notes">
+                サークルカラミティ、グランドカラミティ、円獄殺、四方閃、八門崩絶、ディザスターブレス
+            </div>
+            <div class="guide">※PC: [←][→]補正, [Space]サークルカラミティ, [Enter]グランドカラミティ</div>
         </div>
+
         <div class="settings-panel">
+            <span class="settings-title">サウンド設定</span>
             <div class="settings-group">
-                <label><input type="radio" name="sound-mode" value="num_only" checked onchange="saveSettings()"> 数字のみ</label>
-                <label><input type="radio" name="sound-mode" value="beep" onchange="saveSettings()"> 時報</label>
-                <label><input type="radio" name="sound-mode" value="scale" onchange="saveSettings()"> ドレミ</label>
+                <label><input type="radio" name="sound-mode" value="num_only" checked onchange="saveSettings()"><b>数字のみ</b><span>カウントを声で読み上げ</span></label>
+                <label><input type="radio" name="sound-mode" value="beep" onchange="saveSettings()"><b>時報</b><span>3･2･1･0秒を音で通知</span></label>
+                <label><input type="radio" name="sound-mode" value="scale" onchange="saveSettings()"><b>ドレミ</b><span>7秒前から音階が上昇</span></label>
             </div>
         </div>
-        <div class="version-tag">ver.20260228-44</div>
+        <div class="version-tag">ver.20260228-49</div>
     </div>
 </div>
 
@@ -252,29 +250,19 @@
         ]
     };
 
-    let timers = {
-        1: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} },
-        2: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} }
-    };
+    let timers = { 1: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} }, 2: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} } };
     let lastActiveId = 1;
-
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const synth = window.speechSynthesis;
 
     window.addEventListener('keydown', (e) => {
         if (e.key === ' ' || e.key === '1') { toggleTimer(1); e.preventDefault(); return; }
         if (e.key === 'Enter' || e.key === '2') { toggleTimer(2); e.preventDefault(); return; }
-        if (e.key === 'ArrowLeft') {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
             const id = timers[2].active ? 2 : (timers[1].active ? 1 : lastActiveId);
             const s = document.getElementById(`t${id}-slider`);
-            s.value = parseInt(s.value) - 1; handleSlider(id, s.value);
-            e.preventDefault();
-        }
-        if (e.key === 'ArrowRight') {
-            const id = timers[2].active ? 2 : (timers[1].active ? 1 : lastActiveId);
-            const s = document.getElementById(`t${id}-slider`);
-            s.value = parseInt(s.value) + 1; handleSlider(id, s.value);
-            e.preventDefault();
+            s.value = parseInt(s.value) + (e.key === 'ArrowLeft' ? -1 : 1);
+            handleSlider(id, s.value); e.preventDefault();
         }
     });
 
@@ -295,7 +283,7 @@
 
     function speak(txt) {
         if (synth.speaking) synth.cancel();
-        const u = new SpeechSynthesisUtterance(txt); u.lang = 'ja-JP'; u.rate = 1.8;
+        const u = new SpeechSynthesisUtterance(txt); u.lang = 'ja-JP'; u.rate = 1.4; 
         synth.speak(u);
     }
 
