@@ -11,7 +11,7 @@
     <meta property="og:url" content="https://clahtsm02.github.io/dq10/">
     <meta property="og:image" content="https://clahtsm02.github.io/dq10/image.png">
     <meta name="twitter:card" content="summary_large_image">
-    
+
     <style>
         :root {
             --bg-color: #000000;
@@ -68,7 +68,7 @@
         .timer-section.inactive { opacity: var(--inactive-opacity); }
 
         .header { display: flex; justify-content: space-between; align-items: baseline; pointer-events: none; }
-        .title { font-size: 0.9rem; font-weight: bold; margin: 0; letter-spacing: -0.5px; }
+        .title { font-size: 0.85rem; font-weight: bold; margin: 0; letter-spacing: -0.5px; }
 
         .timer-main {
             display: flex;
@@ -85,13 +85,13 @@
         }
 
         .current-label {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 900;
             text-align: right;
             flex: 1;
+            line-height: 1.2;
         }
 
-        /* 状況一覧（ステップカード）の拡大 */
         .step-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -102,17 +102,20 @@
             background: #000;
             border: 1px solid #444;
             border-radius: 6px;
-            padding: 10px 2px;
-            font-size: 0.85rem; /* 拡大 */
+            padding: 10px 1px;
+            font-size: 0.85rem;
             text-align: center;
             color: #888;
-            font-weight: 900; /* 太字強調 */
+            font-weight: 900;
             min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             line-height: 1.2;
+            word-break: keep-all;
+            white-space: nowrap;
         }
+        .step-card.wrap { white-space: normal; }
 
         #t1-steps .step-card.active { color: #000; background-color: var(--yellow-accent); border-color: #fff; }
         #t2-steps .step-card.active { color: #fff; background-color: var(--red-accent); border-color: #fff; }
@@ -130,18 +133,17 @@
         .btn-start-r { background-color: var(--red-accent); color: #fff; }
         .btn-stop { background-color: var(--stop-color); color: #fff; }
 
-        /* ローテーション表の拡大 */
         .sub-info-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem; /* 拡大 */
+            font-size: 0.85rem;
             font-weight: 900;
             pointer-events: none;
             border-top: 1px solid #444;
             margin-top: 5px;
         }
-        .sub-info-table td { padding: 8px 0; border-bottom: 1px solid #2a2a2a; }
-        .arrow { color: var(--arrow-color); margin: 0 2px; font-size: 0.7rem; }
+        .sub-info-table td { padding: 10px 0; border-bottom: 1px solid #2a2a2a; line-height: 1.4; }
+        .arrow { color: var(--arrow-color); margin: 0 1px; font-size: 0.75rem; }
 
         .slider-wrapper { z-index: 10; padding: 12px 0 5px 0; }
         .slider-header { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; color: #888; margin-bottom: 6px; }
@@ -149,9 +151,10 @@
 
         .bottom-area { margin-top: 20px; padding-bottom: 40px; }
         .bottom-notes { background: #111; border-radius: 8px; padding: 12px; border: 1px solid #333; }
-        .notes-title { font-size: 0.8rem; color: #888; margin-bottom: 6px; display: block; }
+        .notes-title { font-size: 0.8rem; color: #888; margin-top: 8px; margin-bottom: 4px; display: block; border-top: 1px solid #333; padding-top: 8px; }
+        .notes-title:first-child { border-top: none; padding-top: 0; margin-top: 0; }
         .notes { font-size: 0.85rem; font-weight: bold; color: #bbb; line-height: 1.6; }
-        .guide { color: #777; font-size: 0.75rem; margin-top: 10px; border-top: 1px solid #333; padding-top: 8px; }
+        .guide { color: #777; font-size: 0.72rem; margin-top: 10px; border-top: 1px solid #333; padding-top: 8px; font-weight: bold; }
 
         .settings-panel { margin-top: 12px; background: #111; border-radius: 12px; padding: 12px; border: 1px solid #333; }
         .settings-title { font-size: 0.9rem; font-weight: bold; color: #888; margin-bottom: 10px; display: block; text-align: center; }
@@ -179,13 +182,13 @@
                 <div id="t1-label" class="current-label">待機中</div>
             </div>
             <div id="t1-steps" class="step-container">
-                <div class="step-card">線上</div><div class="step-card">線上<br>(遅め)</div><div class="step-card">線上<br>以外</div>
-                <div class="step-card">線上<br>(遅め)</div><div class="step-card">外周<br>広め</div><div class="step-card">線上以外<br>(遅め)</div>
+                <div class="step-card">線上</div><div class="step-card wrap">線上<br>(遅め)</div><div class="step-card">線上以外</div>
+                <div class="step-card wrap">線上<br>(遅め)</div><div class="step-card wrap">外周<br>広め</div><div class="step-card wrap">線上以外<br>(遅め)</div>
             </div>
             <button id="btn1" class="btn-action btn-start-y">START</button>
             <table class="sub-info-table">
-                <tr><td><span style="color:var(--yellow-accent)">90%</span> 円獄殺<span class="arrow">▶</span>ジャッジ<span class="arrow">▶</span>クロー</td></tr>
-                <tr><td><span style="color:var(--yellow-accent)">75%</span> 円獄殺<span class="arrow">▶</span>ジャッジ<span class="arrow">▶</span>八門崩絶</td></tr>
+                <tr><td><span style="color:var(--yellow-accent)">90%</span> 円獄殺<span class="arrow">▶</span>ジャッジメント<span class="arrow">▶</span>ツインクロー</td></tr>
+                <tr><td><span style="color:var(--yellow-accent)">75%</span> 円獄殺<span class="arrow">▶</span>ジャッジメント<span class="arrow">▶</span>八門崩絶</td></tr>
             </table>
             <div class="slider-wrapper" onclick="event.stopPropagation()">
                 <div class="slider-header"><span>◀ 早める [←]</span><span>遅らせる [→] ▶</span></div>
@@ -207,8 +210,8 @@
             </div>
             <button id="btn2" class="btn-action btn-start-r">START</button>
             <table class="sub-info-table">
-                <tr><td><span style="color:var(--red-accent)">50%</span> 通常<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散<span class="arrow">▶</span>ブレス</td></tr>
-                <tr><td><span style="color:var(--red-accent)">25%</span> ブレス<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散<span class="arrow">▶</span>ジャッジ</td></tr>
+                <tr><td><span style="color:var(--red-accent)">50%</span> 通常攻撃<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散する災禍<span class="arrow">▶</span>ブレス</td></tr>
+                <tr><td><span style="color:var(--red-accent)">25%</span> ブレス<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散する災禍<span class="arrow">▶</span>ジャッジメント</td></tr>
             </table>
             <div class="slider-wrapper" onclick="event.stopPropagation()">
                 <div class="slider-header"><span>◀ 早める [←]</span><span>遅らせる [→] ▶</span></div>
@@ -223,7 +226,13 @@
             <div class="notes">
                 サークルカラミティ、グランドカラミティ、円獄殺、四方閃、八門崩絶、ディザスターブレス
             </div>
-            <div class="guide">※PC: [←][→]補正, [Space]サークルカラミティ, [Enter]グランドカラミティ</div>
+            
+            <span class="notes-title">【ローテーション直前のモードを特定できる技】</span>
+            <div class="notes">
+                分散する災禍、クリムゾンペナルティ
+            </div>
+
+            <div class="guide">※PC: [Space]サークルカラミティ, [Enter]グランドカラミティ, [←][→]補正</div>
         </div>
 
         <div class="settings-panel">
@@ -234,7 +243,7 @@
                 <label><input type="radio" name="sound-mode" value="scale" onchange="saveSettings()"><b>ドレミ</b><span>7秒前から音階が上昇</span></label>
             </div>
         </div>
-        <div class="version-tag">ver.20260228-49</div>
+        <div class="version-tag">ver.20260301-60</div>
     </div>
 </div>
 
@@ -246,11 +255,24 @@
             { t: 21, l: "外周広め", v: "外周広め" }, { t: 24, l: "線上以外(遅め)", v: "線上以外。遅め" }
         ],
         2: [
-            { t: 5, l: "虹色の床", v: "虹色の床" }, { t: 23, l: "黄色の床", v: "黄色の床" }
+            { t: 5, l: "虹色の床", v: "虹色の床" }, 
+            { t: 23, l: "黄色の床", v: "黄色の床" } 
         ]
     };
 
-    let timers = { 1: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} }, 2: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} } };
+    const YELLOW_PATTERNS = [
+        { l: "黄色の床<br>(外周外側)", v: "黄色の床。外周。外側" },
+        { l: "黄色の床<br>(外周外側)", v: "黄色の床。外周。外側" },
+        { l: "黄色の床<br>(なし)", v: "黄色の床。安全地帯。なし" },
+        { l: "黄色の床<br>(線上)", v: "黄色の床。線上" },
+        { l: "黄色の床<br>(金網)", v: "黄色の床。金網" },
+        { l: "黄色の床<br>(外周内側)", v: "黄色の床。外周。内側" }
+    ];
+
+    let timers = { 
+        1: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} }, 
+        2: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {}, yellowCount: 0 } 
+    };
     let lastActiveId = 1;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const synth = window.speechSynthesis;
@@ -296,6 +318,10 @@
 
     function stopTimer(id) {
         const t = timers[id]; clearInterval(t.iv); t.active = false;
+        if(id === 2) t.yellowCount = 0; 
+        
+        resetSlider(id);
+
         document.getElementById(`timer${id}-section`).className = 'timer-section inactive';
         document.getElementById(`t${id}-display`).innerText = "0.0";
         document.getElementById(`t${id}-label`).innerText = "待機中";
@@ -304,20 +330,46 @@
         document.querySelectorAll(`#t${id}-steps .step-card`).forEach(c => c.classList.remove('active'));
     }
 
+    function resetSlider(id) {
+        timers[id].adj = 0;
+        const s = document.getElementById(`t${id}-slider`);
+        if (s) s.value = 0;
+        const v = document.getElementById(`t${id}-adj-val`);
+        if (v) v.innerText = "補正: 0s";
+    }
+
     function startStep(id, idx, custom = null) {
-        const t = timers[id]; const cfg = CONFIG[id][idx];
-        t.active = true; t.step = idx; t.time = (custom || cfg.t) + t.adj; t.flags = {};
+        const t = timers[id]; 
+        resetSlider(id);
+
+        let cfg = {...CONFIG[id][idx]};
+
+        if (id === 2 && idx === 1) {
+            const patternIdx = t.yellowCount % 6;
+            const pattern = YELLOW_PATTERNS[patternIdx];
+            cfg.l = pattern.l;
+            cfg.v = pattern.v;
+            t.yellowCount++; 
+        }
+
+        t.active = true; t.step = idx; t.time = (custom || cfg.t);
+        t.flags = {};
+        
         document.getElementById(`timer${id}-section`).className = 'timer-section active';
-        document.getElementById(`t${id}-label`).innerText = cfg.l;
+        document.getElementById(`t${id}-label`).innerHTML = cfg.l;
         const btn = document.getElementById(`btn${id}`); btn.innerText = "STOP"; btn.className = 'btn-action btn-stop';
         document.querySelectorAll(`#t${id}-steps .step-card`).forEach((c, i) => i === idx ? c.classList.add('active') : c.classList.remove('active'));
-        speak("次は" + cfg.v);
+        
+        speak("次は" + cfg.v.replace('<br>', ''));
+        
         clearInterval(t.iv);
         t.iv = setInterval(() => {
             t.time -= 0.1;
             document.getElementById(`t${id}-display`).innerText = Math.max(0, t.time).toFixed(1);
             const m = document.querySelector('input[name="sound-mode"]:checked').value;
-            if (t.time <= 8.0 && !t.flags.v8) { speak(cfg.v); t.flags.v8 = true; }
+            
+            if (t.time <= 8.0 && !t.flags.v8) { speak(cfg.v.replace('<br>', '')); t.flags.v8 = true; }
+            
             for (let i = 0; i <= 7; i++) {
                 const target = 7.0 - i; const fKey = `s${i}`;
                 if (t.time <= target && !t.flags[fKey]) {
@@ -339,7 +391,10 @@
         const t = timers[id]; const newVal = parseInt(val); const diff = newVal - t.adj; t.adj = newVal;
         if (t.active) {
             t.time += diff;
-            if (diff > 0) { if (t.time > 8.0) delete t.flags.v8; for (let i = 0; i <= 7; i++) if (t.time > (7.0 - i)) delete t.flags[`s${i}`]; }
+            if (diff > 0) { 
+                if (t.time > 8.0) delete t.flags.v8; 
+                for (let i = 0; i <= 7; i++) if (t.time > (7.0 - i)) delete t.flags[`s${i}`]; 
+            }
         }
         document.getElementById(`t${id}-adj-val`).innerText = `補正: ${val > 0 ? '+' : ''}${val}s`;
     }
