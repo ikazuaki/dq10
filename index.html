@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ルベランギス３ タイマー</title>
+
     <meta property="og:title" content="ルベランギス３ タイマー">
     <meta property="og:description" content="深淵の咎人たち「厭悪のルベランギス」強さ3専用のローテーションタイマーです。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://clahtsm02.github.io/dq10/">
     <meta property="og:image" content="https://clahtsm02.github.io/dq10/image.png">
     <meta name="twitter:card" content="summary_large_image">
-    <title>ルベランギス３　タイマー</title>
+    
     <style>
         :root {
             --bg-color: #000000;
@@ -17,7 +19,8 @@
             --text-color: #ffffff;
             --yellow-accent: #ffd700;
             --red-accent: #ff4d4d;
-            --active-step-bg: rgba(255, 255, 255, 0.2);
+            --stop-color: #555555;
+            --arrow-color: #aaa;
             --inactive-opacity: 0.35;
         }
 
@@ -28,7 +31,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 4px 8px;
+            padding: 5px 10px;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -39,27 +42,29 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            max-width: 600px;
-            margin: 0 auto;
             width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .timers-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            flex: 0 1 auto;
+            gap: 6px;
+            flex: 1 1 auto;
+            justify-content: center;
         }
 
         .timer-section {
             background: var(--card-bg);
-            border-radius: 10px;
-            padding: 12px 10px; /* 内部余白を少し広く */
+            border-radius: 12px;
+            padding: 10px;
             border: 2px solid #333;
             display: flex;
             flex-direction: column;
-            gap: 6px; /* 内部の要素間隔 */
+            gap: 6px;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .timer-section.active { opacity: 1; border-color: #fff; background: #222; }
@@ -73,7 +78,7 @@
             align-items: center;
             justify-content: space-between;
             pointer-events: none;
-            padding: 2px 0;
+            margin: 4px 0;
         }
 
         .countdown {
@@ -81,11 +86,10 @@
             font-weight: 700;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             min-width: 110px;
-            line-height: 1;
         }
 
         .current-label {
-            font-size: 1.9rem;
+            font-size: 1.6rem;
             font-weight: 700;
             text-align: right;
             flex: 1;
@@ -100,108 +104,81 @@
         .step-card {
             background: #000;
             border: 1px solid #444;
-            border-radius: 4px;
-            padding: 4px;
+            border-radius: 6px;
+            padding: 6px 2px;
             font-size: 0.75rem;
             text-align: center;
-            color: #777;
+            color: #888;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            line-height: 1.2;
         }
-        .step-card.active {
-            color: #fff;
-            border: 1.5px solid white;
-            background: var(--active-step-bg);
+
+        #t1-steps .step-card.active { color: #000; background-color: var(--yellow-accent); border-color: #fff; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        #t2-steps .step-card.active { color: #fff; background-color: var(--red-accent); border-color: #fff; box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); }
+
+        .btn-action {
+            width: 100%;
+            padding: 8px 0;
+            font-size: 1.1rem;
+            font-weight: 900;
+            border: none;
+            border-radius: 8px;
+            pointer-events: none;
+            margin: 4px 0;
         }
+        .btn-start-y { background-color: var(--yellow-accent); color: #000; }
+        .btn-start-r { background-color: var(--red-accent); color: #fff; }
+        .btn-stop { background-color: var(--stop-color); color: #fff; }
 
         .sub-info-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: clamp(0.65rem, 3.4vw, 0.9rem); 
+            font-size: 0.72rem;
             font-weight: bold;
             pointer-events: none;
             border-top: 1px solid #444;
-            white-space: nowrap;
-            letter-spacing: -0.04em;
         }
-        .sub-info-table td { padding: 4px 0; border-bottom: 1px solid #2a2a2a; line-height: 1.1; }
-        
-        .hp-y { color: var(--yellow-accent); margin-right: 2px; }
-        .hp-r { color: var(--red-accent); margin-right: 2px; }
+        .sub-info-table td { padding: 5px 0; border-bottom: 1px solid #2a2a2a; white-space: nowrap; }
+        .arrow { color: var(--arrow-color); margin: 0 2px; font-size: 0.6rem; }
 
-        .inner-note {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #bbb;
-            pointer-events: none;
-        }
+        .slider-wrapper { z-index: 10; padding: 4px 0; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: bold; color: #888; margin-bottom: 2px; }
+        .time-slider { -webkit-appearance: none; width: 100%; height: 14px; background: #444; border-radius: 6px; outline: none; }
 
-        .btn-action {
-            width: 100%;
-            padding: 10px 0;
-            font-size: 1.2rem;
-            font-weight: 900;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            pointer-events: none;
-        }
-        .btn-yellow { background-color: var(--yellow-accent); color: #000; }
-        .btn-red { background-color: var(--red-accent); color: #fff; }
-
-        .slider-wrapper {
-            z-index: 10;
-            cursor: default;
-        }
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: #ccc;
-        }
-        .time-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 12px;
-            background: #444;
-            border-radius: 6px;
-            outline: none;
-        }
-        .time-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 26px;
-            height: 26px;
-            background: #fff;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid #666;
+        @media (min-width: 800px) {
+            .countdown { font-size: 5.5rem; }
+            .current-label { font-size: 2.8rem; }
+            .title { font-size: 1.5rem; }
+            .step-card { font-size: 1rem; min-height: 55px; }
+            .sub-info-table { font-size: 1.1rem; }
         }
 
-        .bottom-notes {
-            margin-top: 0; /* タイマーとの隙間を削除 */
-            background: #111;
-            border-radius: 8px;
-            padding: 6px 10px;
-            border-top: 1px solid #444;
-            flex-grow: 1; /* 余ったスペースを埋める */
-        }
-        .notes { font-size: 0.75rem; font-weight: bold; color: #777; line-height: 1.3; }
+        .bottom-area { display: flex; flex-direction: column; gap: 5px; margin-top: 5px; }
+        .bottom-notes { background: #111; border-radius: 8px; padding: 10px; border-top: 1px solid #444; }
+        .notes { font-size: 0.75rem; font-weight: bold; color: #bbb; line-height: 1.5; }
+        .guide { color: #888; font-size: 0.7rem; margin-top: 4px; }
 
-        .version-tag {
-            text-align: center;
-            font-size: 0.6rem;
-            color: #333;
-            padding: 4px 0;
-            pointer-events: none;
+        .settings-panel { background: #1a1a1a; padding: 8px; border-radius: 8px; }
+        .settings-group { display: flex; gap: 8px; }
+        .settings-group label {
+            display: flex; align-items: center; gap: 6px;
+            background: #333; padding: 12px; border-radius: 15px; cursor: pointer;
+            flex: 1; justify-content: center; font-size: 0.9rem;
         }
+        .version-tag { text-align: center; font-size: 0.6rem; color: #444; padding: 5px 0; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="timers-wrapper">
-        <section id="timer1-section" class="timer-section inactive" onclick="toggleTimer1()">
+        <section id="timer1-section" class="timer-section inactive" onclick="toggleTimer(1)">
             <div class="header">
-                <h2 class="title" style="color: var(--yellow-accent);">サークルカラミティ</h2>
+                <h2 class="title" style="color: var(--yellow-accent);">サークルカラミティ [Space]</h2>
                 <span id="t1-adj-val" style="font-size: 0.8rem; font-weight: bold;">補正: 0s</span>
             </div>
             <div class="timer-main">
@@ -209,154 +186,181 @@
                 <div id="t1-label" class="current-label">待機中</div>
             </div>
             <div id="t1-steps" class="step-container">
-                <div class="step-card">線上</div><div class="step-card">線上(遅)</div><div class="step-card">線上以外</div>
-                <div class="step-card">線上(遅)</div><div class="step-card">外周広め</div><div class="step-card">以外(遅)</div>
+                <div class="step-card">線上</div><div class="step-card">線上(遅め)</div><div class="step-card">線上以外</div>
+                <div class="step-card">線上(遅め)</div><div class="step-card">外周広め</div><div class="step-card">線上以外(遅め)</div>
             </div>
-            <button id="btn1" class="btn-action btn-yellow">START / STOP</button>
+            <button id="btn1" class="btn-action btn-start-y">START</button>
             <table class="sub-info-table">
-                <tr><td><b class="hp-y">HP90%</b> 円獄殺 &#x27A1; ジャッジ &#x27A1; ツイン &#x27A1; 四方閃</td></tr>
-                <tr><td><b class="hp-y">HP75%</b> 円獄殺 &#x27A1; ジャッジ &#x27A1; 八門崩絶</td></tr>
+                <tr><td><span style="color:var(--yellow-accent)">90%</span> 円獄殺<span class="arrow">▶</span>ジャッジメント<span class="arrow">▶</span>ツインクロー<span class="arrow">▶</span>四方閃</td></tr>
+                <tr><td><span style="color:var(--yellow-accent)">75%</span> 円獄殺<span class="arrow">▶</span>ジャッジメント<span class="arrow">▶</span>八門崩絶</td></tr>
             </table>
-            <div class="inner-note">押し反撃：咎人の邪岩 or ツインクロー</div>
             <div class="slider-wrapper" onclick="event.stopPropagation()">
-                <div class="slider-label"><span>-5s</span><span>タイミング調整</span><span>+5s</span></div>
-                <input type="range" id="t1-slider" class="time-slider" min="-5" max="5" step="1" value="0" oninput="handleSlider(1, this.value)">
+                <div class="slider-header"><span>◀ 早める [←]</span><span>遅らせる [→] ▶</span></div>
+                <input type="range" id="t1-slider" class="time-slider" min="-10" max="10" step="1" value="0" oninput="handleSlider(1, this.value)">
             </div>
         </section>
 
-        <section id="timer2-section" class="timer-section inactive" onclick="toggleTimer2()">
+        <section id="timer2-section" class="timer-section inactive" onclick="toggleTimer(2)">
             <div class="header">
-                <h2 class="title" style="color: var(--red-accent);">グランドカラミティ</h2>
+                <h2 class="title" style="color: var(--red-accent);">グランドカラミティ [Enter]</h2>
                 <span id="t2-adj-val" style="font-size: 0.8rem; font-weight: bold;">補正: 0s</span>
             </div>
             <div class="timer-main">
                 <div id="t2-display" class="countdown">0.0</div>
                 <div id="t2-label" class="current-label">待機中</div>
             </div>
-            <div id="t2-steps" class="step-container" style="grid-template-columns: repeat(2, 1fr);">
+            <div id="t2-steps" class="step-container" style="grid-template-columns: 1fr 1fr;">
                 <div class="step-card">虹色の床</div><div class="step-card">黄色の床</div>
             </div>
-            <button id="btn2" class="btn-action btn-red">START / STOP</button>
+            <button id="btn2" class="btn-action btn-start-r">START</button>
             <table class="sub-info-table">
-                <tr><td><b class="hp-r">HP50%</b> 通常 &#x27A1; 八門崩絶 &#x27A1; 分散 &#x27A1; ディザスターブレス</td></tr>
-                <tr><td><b class="hp-r">HP25%</b> ディザスターブレス &#x27A1; 八門崩絶 &#x27A1; 分散 &#x27A1; ジャッジ</td></tr>
+                <tr><td><span style="color:var(--red-accent)">50%</span> 通常<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散する災禍<span class="arrow">▶</span>ディザスターブレス</td></tr>
+                <tr><td><span style="color:var(--red-accent)">25%</span> ディザスターブレス<span class="arrow">▶</span>八門崩絶<span class="arrow">▶</span>分散する災禍<span class="arrow">▶</span>ジャッジメント</td></tr>
             </table>
-            <div class="inner-note">押し反撃：咎人の邪岩 or 厭悪の叫び</div>
             <div class="slider-wrapper" onclick="event.stopPropagation()">
-                <div class="slider-label"><span>-5s</span><span>タイミング調整</span><span>+5s</span></div>
-                <input type="range" id="t2-slider" class="time-slider" min="-5" max="5" step="1" value="0" oninput="handleSlider(2, this.value)">
+                <div class="slider-header"><span>◀ 早める [←]</span><span>遅らせる [→] ▶</span></div>
+                <input type="range" id="t2-slider" class="time-slider" min="-10" max="10" step="1" value="0" oninput="handleSlider(2, this.value)">
             </div>
         </section>
     </div>
 
-    <div class="bottom-notes">
-        <div class="notes">
-            ローテーション固有技：<br/>
-            サークルカラミティ、グランドカラミティ、円獄殺、四方閃、八門崩絶、ディザスターブレス
+    <div class="bottom-area">
+        <div class="bottom-notes">
+            <div class="notes">固有の技：サークル、グランド、円獄殺、四方閃、八門崩絶、ディザスターブレス</div>
+            <div class="guide">※[←][→]キーで補正, [Space]サークル, [Enter]グランド</div>
         </div>
+        <div class="settings-panel">
+            <div class="settings-group">
+                <label><input type="radio" name="sound-mode" value="num_only" checked onchange="saveSettings()"> 数字のみ</label>
+                <label><input type="radio" name="sound-mode" value="beep" onchange="saveSettings()"> 時報</label>
+                <label><input type="radio" name="sound-mode" value="scale" onchange="saveSettings()"> ドレミ</label>
+            </div>
+        </div>
+        <div class="version-tag">ver.20260228-44</div>
     </div>
-    <div class="version-tag">ver.20260227-1011</div>
 </div>
 
 <script>
-    const CONFIG1 = [
-        { time: 5, label: "線上", voice: "線上" },
-        { time: 24, label: "線上(遅め)", voice: "線上。遅め" },
-        { time: 21, label: "線上以外", voice: "線上以外" },
-        { time: 23, label: "線上(遅め)", voice: "線上。遅め" },
-        { time: 21, label: "外周広め", voice: "外周広め" },
-        { time: 24, label: "線上以外(遅)", voice: "線上以外。遅め" }
-    ];
-    const CONFIG2 = [
-        { time: 5, label: "虹", voice: "虹色の床" },
-        { time: 23, label: "黄色", voice: "黄色の床" }
-    ];
+    const CONFIG = {
+        1: [
+            { t: 5, l: "線上", v: "線上" }, { t: 24, l: "線上(遅め)", v: "線上。遅め" },
+            { t: 21, l: "線上以外", v: "線上以外" }, { t: 23, l: "線上(遅め)", v: "線上。遅め" },
+            { t: 21, l: "外周広め", v: "外周広め" }, { t: 24, l: "線上以外(遅め)", v: "線上以外。遅め" }
+        ],
+        2: [
+            { t: 5, l: "虹色の床", v: "虹色の床" }, { t: 23, l: "黄色の床", v: "黄色の床" }
+        ]
+    };
 
-    let timer1 = { active: false, step: 0, timeLeft: 0, interval: null, currentAdj: 0 };
-    let timer2 = { active: false, step: 0, timeLeft: 0, interval: null, currentAdj: 0 };
+    let timers = {
+        1: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} },
+        2: { active: false, step: 0, time: 0, adj: 0, iv: null, flags: {} }
+    };
+    let lastActiveId = 1;
 
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const synth = window.speechSynthesis;
-    function speak(text) {
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === '1') { toggleTimer(1); e.preventDefault(); return; }
+        if (e.key === 'Enter' || e.key === '2') { toggleTimer(2); e.preventDefault(); return; }
+        if (e.key === 'ArrowLeft') {
+            const id = timers[2].active ? 2 : (timers[1].active ? 1 : lastActiveId);
+            const s = document.getElementById(`t${id}-slider`);
+            s.value = parseInt(s.value) - 1; handleSlider(id, s.value);
+            e.preventDefault();
+        }
+        if (e.key === 'ArrowRight') {
+            const id = timers[2].active ? 2 : (timers[1].active ? 1 : lastActiveId);
+            const s = document.getElementById(`t${id}-slider`);
+            s.value = parseInt(s.value) + 1; handleSlider(id, s.value);
+            e.preventDefault();
+        }
+    });
+
+    function saveSettings() {
+        const mode = document.querySelector('input[name="sound-mode"]:checked');
+        if (mode) localStorage.setItem('dq10_timer_mode', mode.value);
+    }
+
+    function playTone(freq, dur, vol=0.2) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(vol, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + dur);
+    }
+
+    function speak(txt) {
         if (synth.speaking) synth.cancel();
-        const uttr = new SpeechSynthesisUtterance(text);
-        uttr.lang = 'ja-JP';
-        uttr.rate = 1.3;
-        synth.speak(uttr);
+        const u = new SpeechSynthesisUtterance(txt); u.lang = 'ja-JP'; u.rate = 1.8;
+        synth.speak(u);
     }
 
-    function updateDisplay(id, time) {
-        document.getElementById(`t${id}-display`).innerText = Math.max(0, time).toFixed(1);
+    function toggleTimer(id) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        lastActiveId = id; const other = id === 1 ? 2 : 1;
+        stopTimer(other);
+        if (timers[id].active) stopTimer(id); else startStep(id, 0);
     }
 
-    function highlightStep(id, stepIdx) {
-        const cards = document.querySelectorAll(`#t${id}-steps .step-card`);
-        cards.forEach((c, idx) => {
-            if (idx === stepIdx) c.classList.add('active');
-            else c.classList.remove('active');
-        });
-    }
-
-    function handleSlider(id, val) {
-        const tObj = (id === 1) ? timer1 : timer2;
-        if (!tObj.active) return;
-        const diff = parseInt(val) - tObj.currentAdj;
-        tObj.currentAdj = parseInt(val);
-        tObj.timeLeft += diff;
-        document.getElementById(`t${id}-adj-val`).innerText = `補正: ${val > 0 ? '+' : ''}${val}s`;
-        updateDisplay(id, tObj.timeLeft);
-    }
-
-    function stopTimer(tObj, id) {
-        clearInterval(tObj.interval);
-        tObj.active = false; tObj.timeLeft = 0; tObj.currentAdj = 0;
-        document.getElementById(`t${id}-slider`).value = 0;
-        document.getElementById(`t${id}-adj-val`).innerText = `補正: 0s`;
-        updateDisplay(id, 0);
+    function stopTimer(id) {
+        const t = timers[id]; clearInterval(t.iv); t.active = false;
+        document.getElementById(`timer${id}-section`).className = 'timer-section inactive';
+        document.getElementById(`t${id}-display`).innerText = "0.0";
         document.getElementById(`t${id}-label`).innerText = "待機中";
-        document.getElementById(`timer${id}-section`).classList.add('inactive');
-        document.getElementById(`timer${id}-section`).classList.remove('active');
-        highlightStep(id, null);
+        const btn = document.getElementById(`btn${id}`); btn.innerText = "START";
+        btn.className = (id === 1) ? 'btn-action btn-start-y' : 'btn-action btn-start-r';
+        document.querySelectorAll(`#t${id}-steps .step-card`).forEach(c => c.classList.remove('active'));
     }
 
-    function startTimerStep(id, stepIdx, customTime = null) {
-        const tObj = (id === 1) ? timer1 : timer2;
-        const cfg = (id === 1) ? CONFIG1 : CONFIG2;
-        tObj.active = true; tObj.step = stepIdx;
-        tObj.timeLeft = (customTime || cfg[stepIdx].time) + tObj.currentAdj;
-        document.getElementById(`timer${id}-section`).classList.remove('inactive');
-        document.getElementById(`timer${id}-section`).classList.add('active');
-        document.getElementById(`t${id}-label`).innerText = cfg[stepIdx].label;
-        highlightStep(id, stepIdx);
-        tObj.v5=false; tObj.v3=false; tObj.v2=false; tObj.v1=false;
-        clearInterval(tObj.interval);
-        tObj.interval = setInterval(() => {
-            tObj.timeLeft -= 0.1;
-            updateDisplay(id, tObj.timeLeft);
-            if (tObj.timeLeft <= 5.0 && !tObj.v5) { 
-                let vText = (id === 1) ? CONFIG1[stepIdx].voice : CONFIG2[stepIdx].voice;
-                speak(vText); tObj.v5=true; 
+    function startStep(id, idx, custom = null) {
+        const t = timers[id]; const cfg = CONFIG[id][idx];
+        t.active = true; t.step = idx; t.time = (custom || cfg.t) + t.adj; t.flags = {};
+        document.getElementById(`timer${id}-section`).className = 'timer-section active';
+        document.getElementById(`t${id}-label`).innerText = cfg.l;
+        const btn = document.getElementById(`btn${id}`); btn.innerText = "STOP"; btn.className = 'btn-action btn-stop';
+        document.querySelectorAll(`#t${id}-steps .step-card`).forEach((c, i) => i === idx ? c.classList.add('active') : c.classList.remove('active'));
+        speak("次は" + cfg.v);
+        clearInterval(t.iv);
+        t.iv = setInterval(() => {
+            t.time -= 0.1;
+            document.getElementById(`t${id}-display`).innerText = Math.max(0, t.time).toFixed(1);
+            const m = document.querySelector('input[name="sound-mode"]:checked').value;
+            if (t.time <= 8.0 && !t.flags.v8) { speak(cfg.v); t.flags.v8 = true; }
+            for (let i = 0; i <= 7; i++) {
+                const target = 7.0 - i; const fKey = `s${i}`;
+                if (t.time <= target && !t.flags[fKey]) {
+                    if (m === 'scale') playTone([261,293,329,349,392,440,493,523][i], (i === 7 ? 0.7 : 0.4));
+                    else if (m === 'beep') { if (target <= 3.0 && target > 0) { playTone(440, 0.15, 0.3); speak(Math.floor(target).toString()); } else if (target <= 0.0) playTone(880, 0.6, 0.4); }
+                    else if (m === 'num_only') { if (target <= 5.0 && target > 0) speak(Math.floor(target).toString()); }
+                    t.flags[fKey] = true;
+                }
             }
-            if (tObj.timeLeft <= 3.0 && !tObj.v3) { speak("3"); tObj.v3=true; }
-            if (tObj.timeLeft <= 2.0 && !tObj.v2) { speak("2"); tObj.v2=true; }
-            if (tObj.timeLeft <= 1.0 && !tObj.v1) { speak("1"); tObj.v1=true; }
-            if (tObj.timeLeft <= 0) {
-                clearInterval(tObj.interval);
-                let nextIdx = (stepIdx + 1) % cfg.length;
-                let nextTime = (id === 1 && nextIdx === 0) ? 21 : (id === 2 && nextIdx === 0) ? 24 : null;
-                startTimerStep(id, nextIdx, nextTime);
+            if (t.time <= -0.1) {
+                let next = (idx + 1) % CONFIG[id].length;
+                let cTime = (id === 1 && next === 0) ? 21 : (id === 2 && next === 0) ? 24 : null;
+                startStep(id, next, cTime);
             }
         }, 100);
     }
 
-    function toggleTimer1() { if (timer1.active) stopTimer(timer1, 1); else { stopTimer(timer2, 2); startTimerStep(1, 0); } }
-    function toggleTimer2() { if (timer2.active) stopTimer(timer2, 2); else { stopTimer(timer1, 1); startTimerStep(2, 0); } }
+    function handleSlider(id, val) {
+        const t = timers[id]; const newVal = parseInt(val); const diff = newVal - t.adj; t.adj = newVal;
+        if (t.active) {
+            t.time += diff;
+            if (diff > 0) { if (t.time > 8.0) delete t.flags.v8; for (let i = 0; i <= 7; i++) if (t.time > (7.0 - i)) delete t.flags[`s${i}`]; }
+        }
+        document.getElementById(`t${id}-adj-val`).innerText = `補正: ${val > 0 ? '+' : ''}${val}s`;
+    }
 
-    window.addEventListener('keydown', (e) => {
-        if (['Digit1', 'Numpad1', 'Space'].includes(e.code)) { e.preventDefault(); toggleTimer1(); }
-        if (['Digit2', 'Enter', 'NumpadEnter'].includes(e.code)) { e.preventDefault(); toggleTimer2(); }
-    });
+    const saved = localStorage.getItem('dq10_timer_mode');
+    if (saved) {
+        const rad = document.querySelector(`input[name="sound-mode"][value="${saved}"]`);
+        if (rad) rad.checked = true;
+    }
 </script>
-
 </body>
 </html>
-
